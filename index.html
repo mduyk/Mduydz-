@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Shop Proxy mduyk~</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{margin:0;font-family:Arial;background:#020617;color:white;}
+.auth{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:#0008;}
+.auth-box{background:#1e293b;padding:25px;border-radius:15px;width:320px;text-align:center;}
+input,button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:10px;}
+button{background:#22c55e;color:white;cursor:pointer;}
+#shop{display:none;}
+.container{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;padding:15px;}
+.box{background:#1e293b;padding:15px;border-radius:15px;text-align:center;}
+.price{color:#22c55e;}
+.topup{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px;}
+.topup button{background:#3b82f6;}
+.history{background:#0f172a;margin:15px;padding:10px;border-radius:10px;}
+.item{border-bottom:1px solid #334155;padding:6px 0;font-size:13px;}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="auth" id="auth">
+<div class="auth-box">
+
+<h3>Đăng ký</h3>
+<input id="regUser" placeholder="Tài khoản">
+<input id="regPass" type="password" placeholder="Mật khẩu">
+<button onclick="register()">Đăng ký</button>
+
+<h3>Đăng nhập</h3>
+<input id="logUser" placeholder="Tài khoản">
+<input id="logPass" type="password" placeholder="Mật khẩu">
+<button onclick="login()">Đăng nhập</button>
+
+</div>
+</div>
+
+<!-- SHOP -->
+<div id="shop">
+
+<h2 style="text-align:center">🛒 Shop Proxy mduyk~</h2>
+
+<h3 style="text-align:center">💰 Số dư: <span id="money">0</span>đ</h3>
+
+<input id="code" placeholder="Nhập mã nạp">
+<button onclick="nap()">Nạp code</button>
+
+<div class="topup">
+<button onclick="goZalo(50000)">+50K</button>
+<button onclick="goZalo(100000)">+100K</button>
+<button onclick="goZalo(200000)">+200K</button>
+<button onclick="goZalo(500000)">+500K</button>
+</div>
+
+<!-- HISTORY -->
+<div class="history">
+<h3>Lịch sử giao dịch</h3>
+<div id="historyBox"></div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="container">
+
+<div class="box">
+<h3>Proxy 2 Tuần</h3>
+<p class="price">50.000đ</p>
+<button onclick="buy('Proxy 2 Tuần',50000)">Mua</button>
+</div>
+
+<div class="box">
+<h3>Proxy Tháng</h3>
+<p class="price">70.000đ</p>
+<button onclick="buy('Proxy Tháng',70000)">Mua</button>
+</div>
+
+<div class="box">
+<h3>Proxy 2 Tháng</h3>
+<p class="price">100.000đ</p>
+<button onclick="buy('Proxy 2 Tháng',100000)">Mua</button>
+</div>
+
+<div class="box">
+<h3>Proxy 3 Tháng</h3>
+<p class="price">150.000đ</p>
+<button onclick="buy('Proxy 3 Tháng',150000)">Mua</button>
+</div>
+
+<div class="box">
+<h3>Proxy Vĩnh viễn</h3>
+<p class="price">300.000đ</p>
+<button onclick="buy('Proxy Vĩnh viễn',300000)">Mua</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+// ================= AUTH =================
+function register(){
+let u=regUser.value;
+let p=regPass.value;
+
+localStorage.setItem("user",u);
+localStorage.setItem("pass",p);
+localStorage.setItem("money_"+u,0);
+
+alert("Đăng ký OK");
+}
+
+function login(){
+let u=logUser.value;
+let p=logPass.value;
+
+if(u==localStorage.getItem("user") && p==localStorage.getItem("pass")){
+auth.style.display="none";
+shop.style.display="block";
+update();
+renderHistory();
+}else alert("Sai tài khoản");
+}
+
+// ================= MONEY =================
+function getMoney(){
+let u=localStorage.getItem("user");
+return Number(localStorage.getItem("money_"+u) || 0);
+}
+
+function setMoney(x){
+let u=localStorage.getItem("user");
+localStorage.setItem("money_"+u,x);
+}
+
+function update(){
+money.innerText=getMoney();
+}
+
+// ================= HISTORY =================
+function saveHistory(type,name,amount){
+let u=localStorage.getItem("user");
+let key="history_"+u;
+
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+h.unshift({
+type,
+name,
+amount,
+time:new Date().toLocaleString("vi-VN")
+});
+
+localStorage.setItem(key,JSON.stringify(h));
+renderHistory();
+}
+
+function renderHistory(){
+let u=localStorage.getItem("user");
+let key="history_"+u;
+
+let h=JSON.parse(localStorage.getItem(key)||"[]");
+
+historyBox.innerHTML="";
+
+h.forEach(i=>{
+historyBox.innerHTML+=`
+<div class="item">
+<b>${i.type}</b> - ${i.name}<br>
+💰 ${i.amount}đ | ⏰ ${i.time}
+</div>`;
+});
+}
+
+// ================= CODE =================
+let codes={
+
+// 50K
+"NAP50-HD7K2M9X":50000,
+"NAP50-Q1Z8P3L6":50000,
+"NAP50-X9M2K7Q1":50000,
+"NAP50-L3P8Z1X7":50000,
+"NAP50-K7X2M9Q8":50000,
+"NAP50-M9X1Q7Z3":50000,
+"NAP50-Z8P2L7X1":50000,
+"NAP50-Q7M3X9K2":50000,
+"NAP50-L1X8Z2P9":50000,
+"NAP50-X3K9M1Q7":50000,
+
+// 100K
+"NAP100-A7X2M9Q1":100000,
+"NAP100-Z8K1P3X9":100000,
+"NAP100-Q2M9X1L7":100000,
+"NAP100-M7X3Q8Z1":100000,
+"NAP100-L1P9K2X8":100000,
+"NAP100-X8Q1M3Z7":100000,
+"NAP100-K9X2L7Q1":100000,
+"NAP100-P1M8Z3X9":100000,
+"NAP100-Z3Q7X1K8":100000,
+"NAP100-X7M9P2L1":100000,
+
+// 200K
+"NAP200-Q1X9M8K2":200000,
+"NAP200-M2Z7P1X9":200000,
+"NAP200-L8Q3X9M1":200000,
+"NAP200-X9K1M7Q3":200000,
+"NAP200-P7X2Z9L1":200000,
+"NAP200-Z1M8Q3X7":200000,
+"NAP200-K3X9P1M8":200000,
+"NAP200-M9Q2X7Z1":200000,
+"NAP200-X1L8M3Q9":200000,
+"NAP200-Q8Z1X7M2":200000,
+
+// 500K
+"NAP500-H2X9K7M1":500000,
+"NAP500-Q8Z1P3L7":500000,
+"NAP500-X7M2Q9K8":500000,
+"NAP500-L9P1X3Z7":500000,
+"NAP500-K3M8Q1X9":500000,
+"NAP500-Z7X9Q2M1":500000,
+"NAP500-P2L8X7Q9":500000,
+"NAP500-M1X9K3Z7":500000,
+"NAP500-Q9Z1X7M2":500000,
+"NAP500-X3K7P9L1":500000
+
+};
+
+let usedCodes=JSON.parse(localStorage.getItem("usedCodes")||"[]");
+
+// ================= NẠP =================
+function nap(){
+let c=code.value.trim();
+
+if(usedCodes.includes(c)) return alert("Code đã dùng");
+
+if(codes[c]!=undefined){
+
+let money=getMoney()+codes[c];
+setMoney(money);
+update();
+
+usedCodes.push(c);
+localStorage.setItem("usedCodes",JSON.stringify(usedCodes));
+
+saveHistory("NẠP","Code nạp",codes[c]);
+
+alert("Nạp thành công +" + codes[c]);
+
+}else alert("Sai code");
+}
+
+// ================= BUY =================
+function buy(name,price){
+let m=getMoney();
+if(m<price) return alert("Không đủ tiền");
+
+setMoney(m-price);
+update();
+
+saveHistory("MUA",name,price);
+
+alert("Mua thành công");
+}
+
+// ================= ZALO =================
+function goZalo(m){
+location.href="https://zalo.me/0328033706";
+}
+
+</script>
+
+</body>
+</html>
